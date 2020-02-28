@@ -21,6 +21,7 @@ class WordMeaning:
             "phrase4_en": "",
             "phrase5_jp": "",
             "phrase5_en": "",
+            "memory_times":"0",
         }
         self.user_ag = {
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36",

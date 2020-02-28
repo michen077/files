@@ -10,6 +10,7 @@ class WordMeaning:
         self.word = {
             "kanji" : keyword,
             "kana" : "",
+            "explanation":"",
             "phrase1_jp" : "",
             "phrase1_en" : "",
             "phrase2_jp" : "",
@@ -21,6 +22,10 @@ class WordMeaning:
             "phrase5_jp": "",
             "phrase5_en": "",
         }
+        self.user_ag = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36",
+        }
+
 
 
     def get_html(self):
@@ -43,28 +48,33 @@ class WordMeaning:
             kanji = soup.find(id="h1Query").get_text()
             kana = soup.find(class_="ruby").get_text()
             kenji = soup.find(class_="Kejje")
+            explanation = soup.find(class_="content-explanation je").get_text()
             kejjeyrhd = kenji.find_all(class_="KejjeYrLn")
             print(kanji, kana)
-
             for item in kejjeyrhd:
                 jpp = item.find(class_="KejjeYrJp").get_text()
                 enp = item.find(class_="KejjeYrEn").get_text()
                 self.update_sentence_to_dict(jpp,enp)
 
 
-            self.word.update({"kanji":kanji,"kana":kana})
+            self.word.update({"kanji":kanji,"kana":kana,"explanation":explanation})
         except AttributeError:
             print("can't find in 研究社新和英中辞典")
             self.get_kanji_etc_JMdict()
 
 
     def get_kanji_etc_JMdict(self):
-        print("---------------start find in JMdict----------------")
-        soup = BeautifulSoup(self.meaning_html, 'html.parser')
-        jmdct = soup.find(class_="mainBlock hlt_JMDCT")
-        kanji = jmdct.find(class_="midashigo").get_text()
-        kana = jmdct.select(".Jmdct .jmdctYm a")[1].get_text()
-        self.word.update({"kanji":kanji,"kana":kana})
+        try:
+            print("---------------start find in JMdict----------------")
+            soup = BeautifulSoup(self.meaning_html, 'html.parser')
+            jmdct = soup.find(class_="mainBlock hlt_JMDCT")
+            explanation = soup.find(class_="content-explanation je").get_text()
+            kanji = jmdct.find(class_="midashigo").get_text()
+            kana = jmdct.select(".Jmdct .jmdctYm a")[1].get_text()
+            self.word.update({"kanji":kanji,"kana":kana,"explanation":explanation})
+        except AttributeError:
+            print("can't find in JMdict")
+
 
 
     def get_sentences(self):
@@ -88,9 +98,10 @@ class WordMeaning:
             if jj and je and "" in self.word.values():
                 self.update_sentence_to_dict(jj,je)
 
+
     def update_sentence_to_dict(self,jj,je):
         for k, v in self.word.items():
-            if k.startswith("phrase") and k.endswith("jp") and not v and je not in self.word.values():
+            if k.startswith("phrase") and k.endswith("jp") and not v and je not in self.word.values() and jj not in self.word.values():
                 self.word.update({k: jj, k.replace("jp", "en"): je})
                 break
 
@@ -102,8 +113,3 @@ class WordMeaning:
 
         return self.word
 
-
-if __name__ == '__main__':
-
-    keyword = "ポケット"
-    WordMeaning(keyword=keyword).exec()

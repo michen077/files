@@ -1,0 +1,109 @@
+import requests
+from bs4 import BeautifulSoup
+from saveToData import save_to_csv
+
+class WordMeaning:
+    def __init__(self,keyword):
+        self.keyword = keyword
+        self.meaning_html,self.sentence_html = self.get_html()
+
+        self.word = {
+            "kanji" : keyword,
+            "kana" : "",
+            "phrase1_jp" : "",
+            "phrase1_en" : "",
+            "phrase2_jp" : "",
+            "phrase2_en" : "",
+            "phrase3_jp": "",
+            "phrase3_en": "",
+            "phrase4_jp": "",
+            "phrase4_en": "",
+            "phrase5_jp": "",
+            "phrase5_en": "",
+        }
+
+
+    def get_html(self):
+        user_ag = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
+        d = {
+            "User-Agent": user_ag,
+        }
+
+        res = requests.get("https://ejje.weblio.jp/content/{}".format(self.keyword), data=d)
+        meaning_html = res.text
+        res = requests.get("https://ejje.weblio.jp/sentence/content/{}".format(self.keyword), data=d)
+        sentence_html = res.text
+        return meaning_html,sentence_html
+
+
+    def get_kanji_kana_phrace(self):
+        try:
+            print("---------------start find in 研究社新和英中辞典-----------------")
+            soup = BeautifulSoup(self.meaning_html, 'html.parser')
+            kanji = soup.find(id="h1Query").get_text()
+            kana = soup.find(class_="ruby").get_text()
+            kenji = soup.find(class_="Kejje")
+            kejjeyrhd = kenji.find_all(class_="KejjeYrLn")
+            print(kanji, kana)
+
+            for item in kejjeyrhd:
+                jpp = item.find(class_="KejjeYrJp").get_text()
+                enp = item.find(class_="KejjeYrEn").get_text()
+                self.update_sentence_to_dict(jpp,enp)
+
+
+            self.word.update({"kanji":kanji,"kana":kana})
+        except AttributeError:
+            print("can't find in 研究社新和英中辞典")
+            self.get_kanji_etc_JMdict()
+
+
+    def get_kanji_etc_JMdict(self):
+        print("---------------start find in JMdict----------------")
+        soup = BeautifulSoup(self.meaning_html, 'html.parser')
+        jmdct = soup.find(class_="mainBlock hlt_JMDCT")
+        kanji = jmdct.find(class_="midashigo").get_text()
+        kana = jmdct.select(".Jmdct .jmdctYm a")[1].get_text()
+        self.word.update({"kanji":kanji,"kana":kana})
+
+
+    def get_sentences(self):
+        print("--------------start find sentences--------------")
+        soup = BeautifulSoup(self.sentence_html, 'html.parser')
+        sentences = soup.find_all(class_="qotC")
+        for sentence in sentences:
+            jj = sentence.find(class_="qotCJJ")
+            sent = []
+            for word in jj:
+                if word.string:
+                    sent.append(word.string)
+            jj = "".join(sent)[:"".join(sent).find("例文帳に追加")]
+
+            je = sentence.find(class_="qotCJE")
+            sent = []
+            for word in je:
+                if word.string:
+                    sent.append(word.string)
+            je ="".join(sent)[:"".join(sent).find(".")+1]
+            if jj and je and "" in self.word.values():
+                self.update_sentence_to_dict(jj,je)
+
+    def update_sentence_to_dict(self,jj,je):
+        for k, v in self.word.items():
+            if k.startswith("phrase") and k.endswith("jp") and not v and je not in self.word.values():
+                self.word.update({k: jj, k.replace("jp", "en"): je})
+                break
+
+    def exec(self):
+        self.get_kanji_kana_phrace()
+        self.get_sentences()
+
+        print(self.word)
+
+        return self.word
+
+
+if __name__ == '__main__':
+
+    keyword = "ポケット"
+    WordMeaning(keyword=keyword).exec()

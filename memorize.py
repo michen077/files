@@ -1,21 +1,12 @@
 import csv
 import random
-from saveToData import save_to_csv
+from saveToDb import select_data_to_dict,alter_memory_times_data
 
 class MemorizeVocabulary:
     def __init__(self):
-        self.wordslst = self.reader_to_list()
+        self.wordslst = select_data_to_dict()
         self.wordslst = self.set_ten_wordlst()
 
-
-    def reader_to_list(self):
-        vocabulary = open("vocabulary_shiftjis.csv", "r", encoding="shiftjis")
-        reader = csv.DictReader(vocabulary)
-        wordlst = []
-        for word in reader:
-            wordict = {k:v for k,v in word.items()}
-            wordlst.append(wordict)
-        return wordlst
 
     def set_ten_wordlst(self):
         tenwordlst = []
@@ -129,25 +120,23 @@ class MemorizeVocabulary:
     def modify_memorize_times(self, word,result=None):
         if result == "add":
             #memorize times plus one
-            print("----------add memory times----------")
             for item in self.wordslst:
                 if item["kanji"] == word["kanji"]:
                     item["memory_times"] = int(item["memory_times"])+1
         elif result != "add":
-            print("----------minus memory times----------")
             for item in self.wordslst:
                 if item["kanji"] == word["kanji"]:
                     item["memory_times"] = int(item["memory_times"])-1
 
+
     def memory_ten_words(self):
         # Memory ten words once time
-        while True:
+        for n in range(1):
             try:
                 timlst = []
                 # get all memorize times
                 for item in self.wordslst:
                     timlst.append(int(item["memory_times"]))
-                    print(item["kanji"],item["memory_times"])
                 if 0 in timlst:
                     # kanji kana explanation
                     self.test_kanji_kana_explanation()
@@ -159,9 +148,8 @@ class MemorizeVocabulary:
 
     def memory_main(self):
         self.memory_ten_words()
-
-
-
+        # alter memorize times to db
+        alter_memory_times_data(self.wordslst)
 
 
 if __name__ == '__main__':

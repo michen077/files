@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from saveToData import save_to_csv
+from saveToCsv import save_to_csv
 
 class WordMeaning:
     def __init__(self,keyword):

@@ -1,9 +1,12 @@
 import csv
 import random
+from saveToData import save_to_csv
 
 class MemorizeVocabulary:
     def __init__(self):
         self.wordslst = self.reader_to_list()
+        self.wordslst = self.set_ten_wordlst()
+
 
     def reader_to_list(self):
         vocabulary = open("vocabulary_shiftjis.csv", "r", encoding="shiftjis")
@@ -22,27 +25,141 @@ class MemorizeVocabulary:
                 tenwordlst.append(self.wordslst[num])
         return tenwordlst
 
-    def random_selection(self):
-        section = []
-        while len(section) < 4:
-            rint = random.randint(0,len(self.wordslst))
-            if rint not in section: section.append(rint)
 
-        print(self.wordslst)
-        selection = {
-            "1":self.wordslst[section[0]]["kana"],
-            "2":self.wordslst[section[1]]["kana"],
-            "3":self.wordslst[section[2]]["kana"],
-            "4":self.wordslst[section[3]]["kana"],
+    def random_selection(self,question_item,answer_item):
+        wordlst = self.wordslst
+        section = []
+        selection = {}
+        while len(section) < 4:
+            try:
+                rint = random.randint(0,len(wordlst))
+                if rint not in section and wordlst[rint][answer_item] and wordlst[rint][question_item]:
+                    section.append(rint)
+            except IndexError:
+                continue
+        num = 0
+        while num < 4:
+            if self.wordslst[section[num]][answer_item]:
+                selection[str(num + 1)] = wordlst[section[num]][answer_item]
+            num += 1
+        try:
+            rint = random.randint(0,3)
+            selection[question_item] = wordlst[section[rint]][question_item]
+        except IndexError:
+            selection[question_item] = wordlst[section[rint]]["kanji"]
+        word = wordlst[section[rint]]
+        answer = wordlst[section[rint]][answer_item]
+
+        return word,selection,answer
+
+
+
+
+    def get_word(self,word):
+        # Explanation
+        print("\n----------------------{}----------------------".format(word["kanji"]))
+        print("カタカナ : {}".format(word["kana"]))
+        print("主な英訳 : {}".format(word["explanation"]))
+        print("例文 : \n{}".format("    "+word["phrase1_jp"]+" "+word["phrase1_en"]))
+
+
+    def get_question(self,**word):
+        print("----------------------{}----------------------".format(word["selection"][word["question_item"]]))
+        for k, v in word["selection"].items():
+            if k != word["question_item"]: print(k, v)
+
+        # checkAnswer
+        my_answer = input("\nMy choice is(1-4) : ")
+        if word["selection"][my_answer] == word["answer"]:
+            print("\nTrue")
+            return self.modify_memorize_times(word["word"],"add")
+        else:
+            print("\nFalse The answer is : {}".format(word["answer"]))
+            self.get_word(word["word"])
+            return self.modify_memorize_times(word["word"],"minus")
+
+
+    def word_study_and_question(self, question_item, answer_item, study=None):
+        word, selection, answer = self.random_selection(question_item, answer_item)
+        word_items = {
+            "word" : word,
+            "selection" : selection,
+            "answer" : answer,
+            "question_item" : question_item,
+            "answer_item" : answer_item
         }
-        return selection
+
+        if study:
+            self.get_word((word))
+        # Question
+        self.get_question(**word_items)
+
+
+    def test_kanji_kana_explanation(self):
+        question_items = ["kanji", "kana", "explanation"]
+        rint = random.randint(0, len(question_items) - 1)
+        item1 = question_items[rint]
+        try:
+            item2 = question_items[rint + 1]
+        except IndexError:
+            item2 = question_items[rint - 1]
+        self.word_study_and_question(question_item=item1, answer_item=item2,study=True)
+
+    def test_prase(self):
+        prase_items = ["phrase1_jp", "phrase1_en", "phrase2_jp", "phrase2_en", "phrase3_jp", "phrase3_en", "phrase4_jp",
+                       "phrase4_en", "phrase5_jp", "phrase5_en"]
+        rint = random.randint(1,5)
+        item1 = "phrase{}_jp".format(rint)
+        item2 = "phrase{}_en".format(rint)
+        self.word_study_and_question(question_item=item1, answer_item=item2)
+        rint = random.randint(1, 5)
+        item1 = "phrase{}_en".format(rint)
+        item2 = "phrase{}_jp".format(rint)
+        self.word_study_and_question(question_item=item1, answer_item=item2)
+
+
+
+    def get_memorize_times(self,word):
+        # get memorize times
+        print("----------get memory times----------")
+        for item in self.wordslst:
+            if item["kanji"] == word["kanji"]:
+                return item["kanji"]
+
+    def modify_memorize_times(self, word,result=None):
+        if result == "add":
+            #memorize times plus one
+            print("----------add memory times----------")
+            for item in self.wordslst:
+                if item["kanji"] == word["kanji"]:
+                    item["memory_times"] = int(item["memory_times"])+1
+        elif result != "add":
+            print("----------minus memory times----------")
+            for item in self.wordslst:
+                if item["kanji"] == word["kanji"]:
+                    item["memory_times"] = int(item["memory_times"])-1
+
+    def memory_ten_words(self):
+        # Memory ten words once time
+        while True:
+            try:
+                timlst = []
+                # get all memorize times
+                for item in self.wordslst:
+                    timlst.append(int(item["memory_times"]))
+                    print(item["kanji"],item["memory_times"])
+                if 0 in timlst:
+                    # kanji kana explanation
+                    self.test_kanji_kana_explanation()
+                    self.test_prase()
+                else:
+                    break
+            except KeyError:
+                continue
 
     def memory_main(self):
-        selection = self.random_selection()
-        # for row in self.set_ten_wordlst():
-        #     print("----------------------{}----------------------".format(row["kanji"]))
-        #     for k,v in selection.items():
-        #         print(k,v)
+        self.memory_ten_words()
+
 
 
 

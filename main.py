@@ -1,5 +1,6 @@
 from requeWeblio import WordMeaning
-from saveToDb import insert_data
+from saveToDb import create_table,insert_data
+from memorize import MemorizeVocabulary
 import saveToCsv
 import time
 import datetime
@@ -14,7 +15,7 @@ def save_and_search(keyword):
     return word
 
 def save_to_db(keyword):
-    word = WordMeaning(keyword=k).exec()
+    word = WordMeaning(keyword=keyword).exec()
     word.update({"save_time": str(datetime.datetime.today())})
     valuelst = [item for item in word.values()]
     trantab = str.maketrans("',()", "    ")
@@ -25,7 +26,19 @@ def save_to_db(keyword):
 
 
 if __name__ == '__main__':
-    wordlst = ["明かす","赤らむ","あざ笑う","焦る","誂える","愛想","間柄","敢えて","あくどい","痣","浅ましい","欺く"]
-    for k in wordlst:
-        save_to_db(keyword=k)
+    print("------------ search word or memory word ------------")
+    print("------------ 1 search word ------------")
+    print("------------ 2 memory word ------------")
+    print("------------ 3 exist ------------")
+    while True:
+        choice = input("1 - 3 : ")
+        if choice == "1":
+            keyword = input("word : ")
+            create_table()
+            save_to_db(keyword=keyword)
+        elif choice == "2":
+            MemorizeVocabulary().memory_main()
+        elif choice == "3":
+            break
+
 

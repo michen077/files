@@ -152,6 +152,3 @@ class MemorizeVocabulary:
         alter_memory_times_data(self.wordslst)
 
 
-if __name__ == '__main__':
-    MemorizeVocabulary().memory_main()
-

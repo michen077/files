@@ -1,19 +1,21 @@
 import csv
+import time
 import random
-from saveToDb import select_data_to_dict,alter_memory_times_data
+from ope_database import select_less_times_data_to_dict,alter_memory_times_data
 
 class MemorizeVocabulary:
     def __init__(self):
-        self.wordslst = select_data_to_dict()
+        self.db_wordlst = select_less_times_data_to_dict()
         self.wordslst = self.set_ten_wordlst()
 
 
     def set_ten_wordlst(self):
+
         tenwordlst = []
-        rannum = set([item for item in range(len(self.wordslst))])
+        rannum = set([item for item in range(len(self.db_wordlst))])
         for num in rannum:
             if len(tenwordlst) <= 10:
-                tenwordlst.append(self.wordslst[num])
+                tenwordlst.append(self.db_wordlst[num])
         return tenwordlst
 
 
@@ -51,7 +53,7 @@ class MemorizeVocabulary:
         print("\n----------------------{}----------------------".format(word["kanji"]))
         print("カタカナ : {}".format(word["kana"]))
         print("主な英訳 : {}".format(word["explanation"]))
-        print("例文 : \n{}".format("    "+word["phrase1_jp"]+" "+word["phrase1_en"]))
+        print("例文 : \n{}\n\n".format("    "+word["phrase1_jp"]+" "+word["phrase1_en"]))
 
 
     def get_question(self,**word):
@@ -63,10 +65,12 @@ class MemorizeVocabulary:
         my_answer = input("\nMy choice is(1-4) : ")
         if word["selection"][my_answer] == word["answer"]:
             print("\nTrue")
+            self.get_word(word["word"])
             return self.modify_memorize_times(word["word"],"add")
         else:
             print("\nFalse The answer is : {}".format(word["answer"]))
             self.get_word(word["word"])
+            time.sleep(3)
             return self.modify_memorize_times(word["word"],"minus")
 
 
@@ -82,19 +86,22 @@ class MemorizeVocabulary:
 
         if study:
             self.get_word((word))
+
         # Question
         self.get_question(**word_items)
 
 
     def test_kanji_kana_explanation(self):
         question_items = ["kanji", "kana", "explanation"]
-        rint = random.randint(0, len(question_items) - 1)
-        item1 = question_items[rint]
-        try:
-            item2 = question_items[rint + 1]
-        except IndexError:
-            item2 = question_items[rint - 1]
-        self.word_study_and_question(question_item=item1, answer_item=item2,study=True)
+        for i in range(2):
+            rint = random.randint(0, len(question_items) - 1)
+            item1 = question_items[rint]
+            try:
+                item2 = question_items[rint + 1]
+            except IndexError:
+                item2 = question_items[rint - 1]
+            self.word_study_and_question(question_item=item1, answer_item=item2)
+            self.word_study_and_question(question_item=item1, answer_item=item2)
 
     def test_prase(self):
         prase_items = ["phrase1_jp", "phrase1_en", "phrase2_jp", "phrase2_en", "phrase3_jp", "phrase3_en", "phrase4_jp",
@@ -129,25 +136,9 @@ class MemorizeVocabulary:
                     item["memory_times"] = int(item["memory_times"])-1
 
 
-    def memory_ten_words(self):
-        # Memory ten words once time
-        for n in range(1):
-            try:
-                timlst = []
-                # get all memorize times
-                for item in self.wordslst:
-                    timlst.append(int(item["memory_times"]))
-                if 0 in timlst:
-                    # kanji kana explanation
-                    self.test_kanji_kana_explanation()
-                    self.test_prase()
-                else:
-                    break
-            except KeyError:
-                continue
-
     def memory_main(self):
-        self.memory_ten_words()
+        self.test_kanji_kana_explanation()
+        self.test_prase()
         # alter memorize times to db
         alter_memory_times_data(self.wordslst)
 

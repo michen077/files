@@ -110,7 +110,13 @@ class WordMeaning:
         self.get_kanji_kana_phrace()
         self.get_sentences()
 
-        print(self.word)
+        print("漢字 : {}".format(self.word["kanji"]))
+        print("カタカナ : {}".format(self.word["kana"]))
+        print("例文１ : \n{}　({})".format(self.word["phrase1_jp"],self.word["phrase1_en"]))
+        print("例文２ : \n{}　({})".format(self.word["phrase2_jp"],self.word["phrase2_en"]))
+        print("例文３ : \n{}　({})".format(self.word["phrase3_jp"],self.word["phrase3_en"]))
+        print("例文４ : \n{}　({})".format(self.word["phrase4_jp"],self.word["phrase4_en"]))
+        print("例文５ : \n{}　({})".format(self.word["phrase5_jp"],self.word["phrase5_en"]))
 
         return self.word
 

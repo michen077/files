@@ -78,13 +78,54 @@ def select_data_to_dict():
             rowlst = [item for item in row]
             for ind in range(len(rowlst)):
                 itemdict[FIELDNAME[ind]] = rowlst[ind]
-                print(itemdict)
             wordlst.append(itemdict)
 
         print("search successful")
         return wordlst
     except Exception as e:
         print(e)
+
+def select_less_times_data_to_dict():
+    try:
+        cursor =conn.cursor()
+        wordlst = []
+
+        SQL = """
+        select * from my_vocabulary where memory_times<10
+        """
+        cursor.execute(SQL)
+
+        for row in cursor.fetchall():
+            itemdict = {}
+            rowlst = [item for item in row]
+            for ind in range(len(rowlst)):
+                itemdict[FIELDNAME[ind]] = rowlst[ind]
+            wordlst.append(itemdict)
+
+        print("search successful")
+        return wordlst
+    except Exception as e:
+        print(e)
+
+def list_all_kanji():
+    wordlst = select_data_to_dict()
+    kanji_list = []
+    for row in wordlst:
+        kanji_list.append(row["kanji"])
+    return list(enumerate(kanji_list))
+
+def delete_from_db(keyword):
+    try:
+        cursor =conn.cursor()
+        SQL = """
+        delete from my_vocabulary where kanji={}
+        """.format('"'+keyword+'"')
+        cursor.execute(SQL)
+        conn.commit()
+        print("delete {} successful".format(keyword))
+    except Exception as e:
+        print(e)
+
 
 if __name__ == '__main__':
     create_table()

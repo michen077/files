@@ -5,11 +5,12 @@ from saveToCsv import save_to_csv
 class WordMeaning:
     def __init__(self,keyword):
         self.keyword = keyword
-        self.meaning_html,self.sentence_html = self.get_html()
+        self.meaning_html,self.sentence_html,self.jpmeaning_html = self.get_html()
 
         self.word = {
             "kanji" : keyword,
             "kana" : "",
+            "jp_explanation" : "",
             "explanation":"",
             "phrase1_jp" : "",
             "phrase1_en" : "",
@@ -39,30 +40,46 @@ class WordMeaning:
         meaning_html = res.text
         res = requests.get("https://ejje.weblio.jp/sentence/content/{}".format(self.keyword), data=d)
         sentence_html = res.text
-        return meaning_html,sentence_html
+        res = requests.get("https://www.weblio.jp/content/{}".format(self.keyword), data=d)
+        jp_meaning = res.text
+        return meaning_html,sentence_html,jp_meaning
+
+    def get_jp_explain(self):
+        print("---------------start find in 実用日本語表現辞典-----------------")
+        soup = BeautifulSoup(self.jpmeaning_html, 'html.parser')
+        jp_exp = soup.find_all(class_="NetDicBody")
+        jp_exp2 = jp_exp[0].div.div
+        jp_exp = jp_exp2.find_all("div", style="text-indent:0;")
+        exp_text = ""
+        for exp in jp_exp:
+            exp_text += exp.strings + "\n"
+        if not exp_text:
+            jp_exp = jp_exp2.find_all("div")
+            exp_text = ""
+            for exp in jp_exp:
+                for string in exp.strings:
+                    exp_text += string
+        self.word.update({"jp_explanation" : exp_text})
 
 
     def get_kanji_kana_phrace(self):
+        print("---------------start find in 研究社新和英中辞典-----------------")
+        soup = BeautifulSoup(self.meaning_html, 'html.parser')
+        kanji = soup.find(id="h1Query").get_text()
+        kana = soup.find(class_="ruby").get_text()
+        kenji = soup.find(class_="Kejje")
+        explanation = soup.find(class_="content-explanation je").get_text()
+        print(kanji, kana)
+        self.word.update({"kanji": kanji, "kana": kana, "explanation": explanation})
         try:
-            print("---------------start find in 研究社新和英中辞典-----------------")
-            soup = BeautifulSoup(self.meaning_html, 'html.parser')
-            kanji = soup.find(id="h1Query").get_text()
-            kana = soup.find(class_="ruby").get_text()
-            kenji = soup.find(class_="Kejje")
-            explanation = soup.find(class_="content-explanation je").get_text()
             kejjeyrhd = kenji.find_all(class_="KejjeYrLn")
-            print(kanji, kana)
             for item in kejjeyrhd:
                 jpp = item.find(class_="KejjeYrJp").get_text()
                 enp = item.find(class_="KejjeYrEn").get_text()
                 self.update_sentence_to_dict(jpp,enp)
-
-
-            self.word.update({"kanji":kanji,"kana":kana,"explanation":explanation})
         except AttributeError:
             print("can't find in 研究社新和英中辞典")
             self.get_kanji_etc_JMdict()
-
 
     def get_kanji_etc_JMdict(self):
         try:
@@ -73,9 +90,8 @@ class WordMeaning:
             kanji = jmdct.find(class_="midashigo").get_text()
             kana = jmdct.select(".Jmdct .jmdctYm a")[1].get_text()
             self.word.update({"kanji":kanji,"kana":kana,"explanation":explanation})
-        except AttributeError:
+        except (AttributeError,IndexError):
             print("can't find in JMdict")
-
 
 
     def get_sentences(self):
@@ -93,9 +109,12 @@ class WordMeaning:
             je = sentence.find(class_="qotCJE")
             sent = []
             for word in je:
+                if word.name == "span":
+                    continue
                 if word.string:
                     sent.append(word.string)
-            je ="".join(sent)[:"".join(sent).find(".")+1]
+            je ="".join(sent)
+
             if jj and je and "" in self.word.values():
                 self.update_sentence_to_dict(jj,je)
 
@@ -107,11 +126,13 @@ class WordMeaning:
                 break
 
     def exec(self):
+        self.get_jp_explain()
         self.get_kanji_kana_phrace()
         self.get_sentences()
 
         print("漢字 : {}".format(self.word["kanji"]))
         print("カタカナ : {}".format(self.word["kana"]))
+        print("意味 : {}".format(self.word["jp_explanation"]))
         print("例文１ : \n{}　({})".format(self.word["phrase1_jp"],self.word["phrase1_en"]))
         print("例文２ : \n{}　({})".format(self.word["phrase2_jp"],self.word["phrase2_en"]))
         print("例文３ : \n{}　({})".format(self.word["phrase3_jp"],self.word["phrase3_en"]))
@@ -120,3 +141,5 @@ class WordMeaning:
 
         return self.word
 
+if __name__ == '__main__':
+    WordMeaning("パレード").exec()

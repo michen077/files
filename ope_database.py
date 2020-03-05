@@ -3,7 +3,7 @@ import sqlite3
 conn = sqlite3.connect("vocabulary.db")
 Table_Name = "my_vocabulary"
 
-FIELDNAME = ["kanji","kana","explanation","phrase1_jp","phrase1_en","phrase2_jp","phrase2_en","phrase3_jp","phrase3_en","phrase4_jp","phrase4_en","phrase5_jp","phrase5_en","memory_times","save_time"]
+FIELDNAME = ["kanji","kana","jp_explanation","explanation","phrase1_jp","phrase1_en","phrase2_jp","phrase2_en","phrase3_jp","phrase3_en","phrase4_jp","phrase4_en","phrase5_jp","phrase5_en","memory_times","save_time"]
 
 def create_table():
     try:
@@ -13,6 +13,7 @@ def create_table():
                 kanji,
                 kana,
                 explanation,
+                jp_explanation,
                 phrase1_jp,
                 phrase1_en,
                 phrase2_jp,

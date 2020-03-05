@@ -1,6 +1,4 @@
 
-8
-res.html,d\d\ddbcb6cb53451fae2845ae7396ff3358eead8925
 C
 vocabulary_book.csv,7\a\7a2e6e7bf06174f4a595a7981f500685ff4ffc1a
 >
@@ -13,5 +11,5 @@ G
 memorize.py,a\6\a652c7a7fe72639d60e933c07309f972242eb3b3
 <
 saveToCsv.py,b\3\b3d017563008f6b1b755f0316d20bb94cc477ec0
-;
-saveToDb.py,0\f\0f11ea1bff855513ce706a9adac01145cee15496
+?
+ope_database.py,d\b\db02c9b0eea47a4301251556f68e0ea1833e737d

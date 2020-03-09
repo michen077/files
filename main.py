@@ -8,7 +8,6 @@ from memorize import MemorizeVocabulary
 def db_check_review():
     check_review()
 
-
 def save_and_search(keyword):
     word = WordMeaning(keyword=keyword).exec()
     time.sleep(3)
@@ -18,11 +17,26 @@ def save_and_search(keyword):
     print("--------------- save_and_search end ------------------")
     return word
 
-def save_to_db(keyword):
+def search_word_save_db(keyword):
     if keyword:
         word = WordMeaning(keyword=keyword).exec()
         choice = input("if save to vocabulary book? 1 yes 2 no : ")
         if choice in ["1","１"]:
+            word.update({"save_time": str(datetime.datetime.today()),
+                         "last_updated": str(datetime.datetime.today())})
+            valuelst = [item for item in word.values()]
+            trantab = str.maketrans("',()", "    ")
+            for ind in range(len(valuelst)):
+                valuelst[ind] = valuelst[ind].translate(trantab)
+            insert_data(valuelst)
+    else:
+        print("Please enter the word.")
+
+def only_search_sentence(keyword):
+    if keyword:
+        word = WordMeaning(keyword=keyword).sentences_exec()
+        choice = input("if save to vocabulary book? 1 yes 2 no : ")
+        if choice in ["1", "１"]:
             word.update({"save_time": str(datetime.datetime.today()),
                          "last_updated": str(datetime.datetime.today())})
             valuelst = [item for item in word.values()]
@@ -47,23 +61,28 @@ if __name__ == '__main__':
         try:
             print("------------ search word or memory word ------------")
             print("------------ 1 search word from weblio ------------")
-            print("------------ 2 memory word ------------")
-            print("------------ 3 show vocabulary ------------")
-            print("------------ 4 delete from vocabulary ------------")
-            print("------------ 5 exit ------------")
+            print("------------ 2 only sentences from weblio ------------")
+            print("------------ 3 memory word ------------")
+            print("------------ 4 show vocabulary ------------")
+            print("------------ 5 delete from vocabulary ------------")
+            print("------------ 6 exit ------------")
             choice = input("1 - 5 : ")
             if choice in ["1","１"]:
                 keyword = input("word : ")
                 create_table()
-                save_to_db(keyword=keyword)
+                search_word_save_db(keyword=keyword)
             elif choice in ["2","２"]:
+                keyword = input("word : ")
+                create_table()
+                only_search_sentence(keyword=keyword)
+            elif choice in ["3","３"]:
                 for num in range(2):
                     MemorizeVocabulary().memory_main()
-            elif choice in ["3","３"]:
-                print(list_all_kanji())
             elif choice in ["4","４"]:
-                delete_word()
+                print(list_all_kanji())
             elif choice in ["5","５"]:
+                delete_word()
+            elif choice in ["6","６"]:
                 break
         except (KeyError,IndexError):
             continue

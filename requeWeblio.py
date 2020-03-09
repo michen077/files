@@ -98,7 +98,7 @@ class WordMeaning:
             print("can't find in JMdict")
 
 
-    def get_sentences(self):
+    def get_sentences(self,grammar=None):
         print("--------------start find sentences--------------")
         soup = BeautifulSoup(self.sentence_html, 'html.parser')
         sentences = soup.find_all(class_="qotC")
@@ -119,8 +119,10 @@ class WordMeaning:
                     sent.append(word.string)
             je ="".join(sent)
 
-            if jj and je and "" in self.word.values():
+            if not grammar and jj and je and "" in self.word.values():
                 self.update_sentence_to_dict(jj,je)
+            if grammar and jj and je and "" in self.word.values() and self.keyword in jj:
+                self.update_sentence_to_dict(jj, je)
 
 
     def update_sentence_to_dict(self,jj,je):
@@ -142,6 +144,18 @@ class WordMeaning:
         print("例文３ : \n{}　({})".format(self.word["phrase3_jp"],self.word["phrase3_en"]))
         print("例文４ : \n{}　({})".format(self.word["phrase4_jp"],self.word["phrase4_en"]))
         print("例文５ : \n{}　({})".format(self.word["phrase5_jp"],self.word["phrase5_en"]))
+
+        return self.word
+
+    def sentences_exec(self):
+        self.get_sentences(grammar=True)
+
+        print("漢字 : {}".format(self.word["kanji"]))
+        print("例文１ : \n{}　({})".format(self.word["phrase1_jp"], self.word["phrase1_en"]))
+        print("例文２ : \n{}　({})".format(self.word["phrase2_jp"], self.word["phrase2_en"]))
+        print("例文３ : \n{}　({})".format(self.word["phrase3_jp"], self.word["phrase3_en"]))
+        print("例文４ : \n{}　({})".format(self.word["phrase4_jp"], self.word["phrase4_en"]))
+        print("例文５ : \n{}　({})".format(self.word["phrase5_jp"], self.word["phrase5_en"]))
 
         return self.word
 

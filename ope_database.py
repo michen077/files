@@ -74,7 +74,7 @@ def alter_memory_times_data(word_lst):
             updated = str(datetime.datetime.today())
             SQL = """
             update my_vocabulary set last_updated = {} where kanji = {}
-            """.format(updated,'"'+word_dict["kanji"]+'"')
+            """.format('"'+updated+'"','"'+word_dict["kanji"]+'"')
             cursor.execute(SQL)
             conn.commit()
         print("alter successful")

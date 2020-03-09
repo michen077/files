@@ -2,8 +2,11 @@ import saveToCsv
 import time
 import datetime
 from requeWeblio import WordMeaning
-from ope_database import create_table,insert_data,list_all_kanji,delete_from_db
+from ope_database import sql_exec,create_table,insert_data,list_all_kanji,delete_from_db,check_review
 from memorize import MemorizeVocabulary
+
+def db_check_review():
+    check_review()
 
 
 def save_and_search(keyword):
@@ -20,7 +23,8 @@ def save_to_db(keyword):
         word = WordMeaning(keyword=keyword).exec()
         choice = input("if save to vocabulary book? 1 yes 2 no : ")
         if choice in ["1","１"]:
-            word.update({"save_time": str(datetime.datetime.today())})
+            word.update({"save_time": str(datetime.datetime.today()),
+                         "last_updated": str(datetime.datetime.today())})
             valuelst = [item for item in word.values()]
             trantab = str.maketrans("',()", "    ")
             for ind in range(len(valuelst)):
@@ -38,6 +42,7 @@ def delete_word():
             delete_from_db(row[1])
 
 if __name__ == '__main__':
+    db_check_review()
     while True:
         try:
             print("------------ search word or memory word ------------")

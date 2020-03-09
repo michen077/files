@@ -24,7 +24,7 @@ def create_table():
                 phrase4_en,
                 phrase5_jp,
                 phrase5_en,
-                memory_times,
+                memory_times int,
                 save_time,
                 UNIQUE(kanji))
                 '''

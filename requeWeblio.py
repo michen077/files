@@ -52,25 +52,29 @@ class WordMeaning:
         jp_exp = jp_exp2.find_all("div", style="text-indent:0;")
         exp_text = ""
         for exp in jp_exp:
-            exp_text += exp.strings + "\n"
+            exp_text += exp.get_text()+ "\n"
         if not exp_text:
             jp_exp = jp_exp2.find_all("div")
             exp_text = ""
             for exp in jp_exp:
                 for string in exp.strings:
                     exp_text += string
+        print(exp_text)
         self.word.update({"jp_explanation" : exp_text})
 
 
     def get_kanji_kana_phrace(self):
         print("---------------start find in 研究社新和英中辞典-----------------")
-        soup = BeautifulSoup(self.meaning_html, 'html.parser')
-        kanji = soup.find(id="h1Query").get_text()
-        kana = soup.find(class_="ruby").get_text()
-        kenji = soup.find(class_="Kejje")
-        explanation = soup.find(class_="content-explanation je").get_text()
-        print(kanji, kana)
-        self.word.update({"kanji": kanji, "kana": kana, "explanation": explanation})
+        try:
+            soup = BeautifulSoup(self.meaning_html, 'html.parser')
+            kanji = soup.find(id="h1Query").get_text()
+            kana = soup.find(class_="ruby").get_text()
+            kenji = soup.find(class_="Kejje")
+            explanation = soup.find(class_="content-explanation je").get_text()
+            print(kanji, kana)
+            self.word.update({"kanji": kanji, "kana": kana, "explanation": explanation})
+        except AttributeError:
+            print("Can't find 漢字　カタカナ　主な英訳in 和英中辞典")
         try:
             kejjeyrhd = kenji.find_all(class_="KejjeYrLn")
             for item in kejjeyrhd:
@@ -142,4 +146,4 @@ class WordMeaning:
         return self.word
 
 if __name__ == '__main__':
-    WordMeaning("パレード").exec()
+    WordMeaning("皮切り").exec()

@@ -1,2 +1,3 @@
 
-xpython:S100C"[Rename method "get_kanji_etc_JMdict" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(éã¯z8ò„Ð§ˆ.
+xpython:S3776e"TRefactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.(Š²á¨ûÿÿÿÿ8õ©ãÃŠ.
+xpython:S100X"[Rename method "get_kanji_etc_JMdict" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(éã¯z8ò„Ð§ˆ.

@@ -52,7 +52,7 @@ if __name__ == '__main__':
                 create_table()
                 save_to_db(keyword=keyword)
             elif choice in ["2","２"]:
-                for num in range(4):
+                for num in range(2):
                     MemorizeVocabulary().memory_main()
             elif choice in ["3","３"]:
                 print(list_all_kanji())
@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 delete_word()
             elif choice in ["5","５"]:
                 break
-        except KeyError:
+        except (KeyError,IndexError):
             continue
 
 

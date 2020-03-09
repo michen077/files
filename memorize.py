@@ -23,13 +23,19 @@ class MemorizeVocabulary:
         wordlst = self.wordslst
         section = []
         selection = {}
+        time1 = time.time()
         while len(section) < 4:
+            time2 = time.time()
+            if time2 - time1 > 3:
+                print("\nYou haven't anything to review.\n")
+                break
             try:
                 rint = random.randint(0,len(wordlst))
                 if rint not in section and wordlst[rint][answer_item] and wordlst[rint][question_item]:
                     section.append(rint)
             except IndexError:
                 continue
+
         num = 0
         while num < 4:
             if self.wordslst[section[num]][answer_item]:
@@ -52,6 +58,7 @@ class MemorizeVocabulary:
         # Explanation
         print("\n----------------------{}----------------------".format(word["kanji"]))
         print("カタカナ : {}".format(word["kana"]))
+        print("意味 : {}".format(word["jp_explanation"]))
         print("主な英訳 : {}".format(word["explanation"]))
         print("例文 : \n{}\n\n".format("    "+word["phrase1_jp"]+" "+word["phrase1_en"]))
 
@@ -92,7 +99,7 @@ class MemorizeVocabulary:
 
 
     def test_kanji_kana_explanation(self):
-        question_items = ["kanji", "kana", "explanation"]
+        question_items = ["kanji", "kana", "explanation","jp_explanation"]
         for i in range(2):
             rint = random.randint(0, len(question_items) - 1)
             item1 = question_items[rint]

@@ -47,64 +47,82 @@ def sql_exec(sql):
     except Exception as e:
         print(e)
 
-def txt_to_dict():
-    with open("try_grammar.txt",encoding="utf8") as f:
-        gra_text = f.read()
+class GrammayTextToDb:
 
-    gralst = gra_text.split("\n\n")
-    gralst2 = []
-    for item in gralst:
-        itemlst = item.split("\n")
-        itemdict = {}
-        for ind in range(len(itemlst)):
-            itemdict[FIELDNAME[ind]] = itemlst[ind]
-        gralst2.append(itemdict)
-    return gralst2
+    def txt_to_dict(self):
+        with open("try_grammar.txt",encoding="utf8") as f:
+            gra_text = f.read()
 
-def match_word_dict(gralst):
-    # match dict
-    worddiclst = []
-    for gra in gralst:
-        if gra["kanji"]:
-            word_dict = {k: v for k, v in WORD_DICT.items()}
-            for k in word_dict.keys():
-                if gra.__contains__(k):
-                    word_dict[k] = gra[k]
-                word_dict.update({
-                    "memory_times": 1,
-                    "save_time": str(datetime.datetime.today())
-                })
-            worddiclst.append(word_dict)
-    return worddiclst
+        gralst = gra_text.split("\n\n")
+        gralst2 = []
+        for item in gralst:
+            itemlst = item.split("\n")
+            itemdict = {}
+            for ind in range(len(itemlst)):
+                itemdict[FIELDNAME[ind]] = itemlst[ind]
+            gralst2.append(itemdict)
+        return gralst2
 
-def insert_gralst_int_db(txtworddiclst):
-    for item in txtworddiclst:
-        keys = str([item for item in item.keys()]).replace("[","")
-        keys = keys.replace("]","")
-        values = str([item for item in item.values()]).replace("[","")
-        values = values.replace("]","")
-        sql = """
-        insert or ignore into grammar({}) values ({})
-        """.format(keys.replace('\'',''),values.replace("\\'",""))
-        sql_exec(sql)
+    def match_word_dict(self,gralst):
+        # match dict
+        worddiclst = []
+        for gra in gralst:
+            if gra["kanji"]:
+                word_dict = {k: v for k, v in WORD_DICT.items()}
+                for k in word_dict.keys():
+                    if gra.__contains__(k):
+                        word_dict[k] = gra[k]
+                    word_dict.update({
+                        "memory_times": 1,
+                        "save_time": str(datetime.datetime.today())
+                    })
+                worddiclst.append(word_dict)
+        return worddiclst
 
+    def insert_gralst_int_db(self,txtworddiclst):
+        for item in txtworddiclst:
+            keys = str([item for item in item.keys()]).replace("[","")
+            keys = keys.replace("]","")
+            values = str([item for item in item.values()]).replace("[","")
+            values = values.replace("]","")
+            sql = """
+            insert or ignore into grammar({}) values ({})
+            """.format(keys.replace('\'',''),values.replace("\\'",""))
+            sql_exec(sql)
 
-def insert_into_db(word_dict):
-    for k,v in word_dict:
-        sql = """
-            insert or ignore into {} values(
-            {}
-            )
-            """.format(Table_Name,"")
+    def grammar_text_to_db(self):
+        # save try_grammar.txt to db
+        gralst = self.txt_to_dict()
+        txtworddiclst = self.match_word_dict(gralst)
+        self.insert_gralst_int_db(txtworddiclst)
 
+def select_data_to_dict():
+    try:
+        cursor =conn.cursor()
+        wordlst = []
+
+        SQL = """
+        select * from {}
+        """.format(Table_Name)
+        cursor.execute(SQL)
+
+        for row in cursor.fetchall():
+            itemdict = {}
+            rowlst = [item for item in row]
+            for ind in range(len(rowlst)):
+                itemdict[FIELDNAME[ind]] = rowlst[ind]
+            wordlst.append(itemdict)
+
+        print("search successful")
+        return wordlst
+    except Exception as e:
+        print(e)
 
 if __name__ == '__main__':
     create_table()
+    GrammayTextToDb().grammar_text_to_db()
 
-    # save try_grammar.txt to db
-    gralst = txt_to_dict()
-    txtworddiclst = match_word_dict(gralst)
-    insert_gralst_int_db(txtworddiclst)
+
 
 
 

@@ -1,4 +1,3 @@
-import csv
 import time
 import random
 from ope_database import select_less_times_data_to_dict,alter_memory_times_data

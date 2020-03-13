@@ -1,3 +1,4 @@
 
 spython:S3776e"TRefactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.(àáŠ¦8õ©ãÃŠ.
 xpython:S100X"[Rename method "get_kanji_etc_JMdict" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(éã¯z8ò„Ğ§ˆ.
+ppython:S11921"LDefine a constant instead of duplicating this literal 'html.parser' 4 times.(ÌêÏĞşÿÿÿÿ8ç…¹çŒ.

@@ -4,6 +4,7 @@ import datetime
 from requeWeblio import WordMeaning
 from ope_database import sql_exec,create_table,insert_data,list_all_kanji,delete_from_db,check_review
 from memorize import MemorizeVocabulary
+from gramma_memorize import GrammaMemorize
 
 def db_check_review():
     check_review()
@@ -65,8 +66,9 @@ if __name__ == '__main__':
             print("------------ 3 memory word ------------")
             print("------------ 4 show vocabulary ------------")
             print("------------ 5 delete from vocabulary ------------")
-            print("------------ 6 exit ------------")
-            choice = input("1 - 5 : ")
+            print("------------ 6 memory grammar ------------")
+            print("------------ 7 exit ------------")
+            choice = input("1 - 6 : ")
             if choice in ["1","１"]:
                 keyword = input("word : ")
                 create_table()
@@ -83,6 +85,8 @@ if __name__ == '__main__':
             elif choice in ["5","５"]:
                 delete_word()
             elif choice in ["6","６"]:
+                GrammaMemorize().gra_memo_exec()
+            elif choice in ["7","７"]:
                 break
         except (KeyError,IndexError):
             continue

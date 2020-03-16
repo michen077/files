@@ -1,6 +1,7 @@
 import time
 import random
-from ope_grammmar_db import sql_exec,select_data_to_dict
+import datetime
+from ope_grammmar_db import sql_exec,select_data_to_dict,alter_db_item,create_table,GrammayTextToDb
 
 def get_rnlst(range,length=4):
     ranlst = []
@@ -31,7 +32,7 @@ class GrammaMemorize:
 
     def get_question_and_answer(self,selectionlst = None):
         if not selectionlst : selectionlst = self.four_selectionlst
-        a = random.randint(0, 3)
+        a = random.randint(0,3)
         anwlst = []
         one_question = {
             "question" : "",
@@ -40,7 +41,7 @@ class GrammaMemorize:
         }
         q = selectionlst[a]
         one_question["question"] = q["kanji"]
-        selector = ["explanation","en_explanation","phrase1_jp","phrase2_jp","phrase3_jp","phrase4_jp","phrase5_jp","phrase6_jp","phrase7_jp","phrase8_jp"]
+        selector = ["en_explanation","phrase1_jp","phrase2_jp","phrase3_jp","phrase4_jp","phrase5_jp","phrase6_jp","phrase7_jp","phrase8_jp"]
         while len(anwlst) < 4:
             anwlst = []
             rint = random.randint(0,len(selector)-1)
@@ -48,34 +49,59 @@ class GrammaMemorize:
                 if item[selector[rint]]:
                     anwlst.append(item[selector[rint]])
         one_question["selection"] = anwlst
-        print(one_question)
         return one_question
 
     def get_the_question_and_review(self):
         one_question = self.get_question_and_answer()
-        print("---------------------{}---------------------").format(one_question["question"])
-
+        print("---------------------{}---------------------".format(one_question["question"]))
+        for itin in range(len(one_question["selection"])):
+            print("{} {}".format(itin+1,one_question["selection"][itin]))
         while True:
-            choice = input("1 ~ 4 : ")
-            if choice-1 == one_question["answer"]:
+            choice = int(input("1 ~ 4 : "))
+            if choice-1 == int(one_question["answer"]):
                 print("Right")
                 # modify memorize times
-                self.modify_memorize_times(one_question["question"],"add")
+                self.modify_memorize_times(word=one_question["question"],result="add")
+                break
+            elif choice-1 != int(one_question["answer"]):
+                print("Wrong")
+                # modify memorize times
+                self.modify_memorize_times(word=one_question["question"], result="minus")
+                input("Press any key to continue :")
                 break
             elif choice not in ["1","2","3","4","１","２","３","４"]:
                 continue
-            else:
-                print("Wrong")
-                # modify memorize times
-                self.modify_memorize_times(one_question["question"], "minus")
-                break
+
 
     def modify_memorize_times(self,word,result):
+        for item in self.wodlst:
+            if item["kanji"] == word:
+                if result == "add":
+                    item["memory_times"] += 1
+                elif result == "minus":
+                    item["memory_times"] -= 1
+                self.get_word(word=item)
+                item["last_updated"] = str(datetime.datetime.today())
+                alter_db_item(item="memory_times", word_dict=item)
+                alter_db_item(item="last_updated", word_dict=item)
+
+    def get_word(self,word):
+        # Explanation
+        jp_explanation = word["explanation"] if word["explanation"] else ""
+        explanation = word["en_explanation"] if word["en_explanation"] else ""
+        print("\n----------------------{}----------------------".format(word["kanji"]))
+        print("意味 : {}".format(jp_explanation))
+        print("英訳 : {}".format(explanation))
+        print("例文 : \n{}\n".format("    "+word["phrase1_jp"]))
 
 
     def gra_memo_exec(self):
-        selectionlst = self.get_grlst_fromdb()
+        # create_table()
+        # GrammayTextToDb().grammar_text_to_db()
+        self.get_grlst_fromdb()
         self.convert_phrase_toquestion()
+        for count in range(3):
+            self.get_the_question_and_review()
 
 
 

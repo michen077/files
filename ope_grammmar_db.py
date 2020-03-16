@@ -42,7 +42,7 @@ def sql_exec(sql):
         cursor =conn.cursor()
         cursor.execute(sql)
         conn.commit()
-        print("insert successful")
+        print("exec successful")
         return cursor
     except Exception as e:
         print(e)
@@ -117,6 +117,12 @@ def select_data_to_dict():
         return wordlst
     except Exception as e:
         print(e)
+
+def alter_db_item(word_dict,item):
+    SQL = """
+        update grammar set {} = {} where kanji = {}
+        """.format(item,word_dict["memory_times"], '"' + word_dict["kanji"] + '"')
+    sql_exec(SQL)
 
 if __name__ == '__main__':
     create_table()

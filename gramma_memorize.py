@@ -65,6 +65,7 @@ class GrammaMemorize:
                 break
             elif choice-1 != int(one_question["answer"]):
                 print("Wrong")
+                print("The answer is : "+one_question["selection"][one_question["answer"]])
                 # modify memorize times
                 self.modify_memorize_times(word=one_question["question"], result="minus")
                 input("Press any key to continue :")
@@ -98,9 +99,9 @@ class GrammaMemorize:
     def gra_memo_exec(self):
         # create_table()
         # GrammayTextToDb().grammar_text_to_db()
-        self.get_grlst_fromdb()
-        self.convert_phrase_toquestion()
-        for count in range(3):
+        for count in range(5):
+            self.get_grlst_fromdb()
+            self.convert_phrase_toquestion()
             self.get_the_question_and_review()
 
 

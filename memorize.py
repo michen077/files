@@ -89,7 +89,7 @@ class MemorizeVocabulary:
         else:
             print("\nFalse The answer is : {}".format(word["answer"]))
             self.get_word(word["word"])
-            time.sleep(3)
+            input("enter any key to continue: ")
             return self.modify_memorize_times(word["word"],"minus")
 
 
@@ -114,7 +114,7 @@ class MemorizeVocabulary:
         question_items = ["kanji", "kana", "explanation","jp_explanation"]
         for i in range(2):
             rint = random.randint(0, len(question_items) - 1)
-            item1 = question_items[rint]
+            item1 = question_items[random.randint(0,1)]
             try:
                 item2 = question_items[rint + 1]
             except IndexError:

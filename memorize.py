@@ -112,7 +112,7 @@ class MemorizeVocabulary:
 
     def test_kanji_kana_explanation(self):
         question_items = ["kanji", "kana", "explanation","jp_explanation"]
-        for i in range(2):
+        for i in range(5):
             rint = random.randint(0, len(question_items) - 1)
             item1 = question_items[random.randint(0,1)]
             try:
@@ -121,12 +121,12 @@ class MemorizeVocabulary:
                 item2 = question_items[rint - 1]
             self.word_study_and_question(question_item=item1, answer_item=item2)
             self.word_study_and_question(question_item=item1, answer_item=item2)
-            return self.test_prase()
+        return self.test_prase()
 
     def test_prase(self):
         prase_items = ["phrase1_jp", "phrase1_en", "phrase2_jp", "phrase2_en", "phrase3_jp", "phrase3_en", "phrase4_jp",
                        "phrase4_en", "phrase5_jp", "phrase5_en"]
-        for c in range(3):
+        for c in range(2):
             rint = random.randint(1,5)
             item1 = "phrase{}_jp".format(rint)
             item2 = "phrase{}_en".format(rint)

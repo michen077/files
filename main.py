@@ -49,12 +49,14 @@ def only_search_sentence(keyword):
         print("Please enter the word.")
 
 def delete_word():
-    wordlst = list_all_kanji()
-    print(wordlst)
-    choice = int(input("choice input : "))
-    for row in wordlst:
-        if choice == row[0]:
-            delete_from_db(row[1])
+    choice = None
+    while choice !="exit":
+        wordlst = list_all_kanji()
+        print(wordlst)
+        choice = int(input("choice input : "))
+        for row in wordlst:
+            if choice == row[0]:
+                delete_from_db(row[1])
 
 if __name__ == '__main__':
     db_check_review()

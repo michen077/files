@@ -126,7 +126,7 @@ def select_less_times_data_to_dict():
         wordlst = []
 
         SQL = """
-        select * from my_vocabulary where memory_times<10 order by save_time DESC
+        select * from my_vocabulary where memory_times<3 order by save_time DESC
         """
         cursor.execute(SQL)
 
@@ -183,13 +183,20 @@ def check_review():
         if updated_time:
             ut = datetime.datetime.fromisoformat(updated_time)
             td = (today - ut).days
-            if td >= 1:
-                mt = select_memory_times(kanji)[0]
-                mt = mt - td
+            mt = select_memory_times(kanji)[0]
+            if mt < 0:
                 sql = """
-                    update my_vocabulary set memory_times={},last_updated={} where kanji={};
-                    """.format('"' + str(mt) + '"', '"' + str(today) + '"', '"' + str(kanji) + '"')
+                   update my_vocabulary set memory_times={},last_updated={} where kanji={};
+                   """.format('"' + str(0) + '"', '"' + str(today) + '"',
+                              '"' + str(kanji) + '"')
                 sql_exec(sql)
+            if td >= 1:
+                if mt > 0:
+                    mt = mt - td
+                    sql = """
+                        update my_vocabulary set memory_times={},last_updated={} where kanji={};
+                        """.format('"' + str(mt) + '"', '"' + str(today) + '"', '"' + str(kanji) + '"')
+                    sql_exec(sql)
 
 if __name__ == '__main__':
     create_table()

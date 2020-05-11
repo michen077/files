@@ -85,6 +85,7 @@ class MemorizeVocabulary:
         if word["selection"][my_answer] == word["answer"]:
             print("\nTrue")
             self.get_word(word["word"])
+            time.sleep(5)
             return self.modify_memorize_times(word["word"],"add")
         else:
             print("\nFalse The answer is : {}".format(word["answer"]))
@@ -111,7 +112,8 @@ class MemorizeVocabulary:
 
 
     def test_kanji_kana_explanation(self):
-        question_items = ["kanji", "kana", "explanation","jp_explanation"]
+        # question_items = ["kanji", "kana", "explanation","jp_explanation"]
+        question_items = ["kanji", "kana", "explanation"]
         for i in range(5):
             rint = random.randint(0, len(question_items) - 1)
             item1 = question_items[random.randint(0,1)]

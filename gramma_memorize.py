@@ -82,6 +82,7 @@ class GrammaMemorize:
                 elif result == "minus":
                     item["memory_times"] -= 1
                 self.get_word(word=item)
+                time.sleep(5)
                 item["last_updated"] = str(datetime.datetime.today())
                 alter_db_item(item="memory_times", word_dict=item)
                 alter_db_item(item="last_updated", word_dict=item)

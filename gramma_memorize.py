@@ -13,7 +13,7 @@ def get_rnlst(range,length=4):
 
 class GrammaMemorize:
     def __init__(self):
-        self.wodlst = select_data_to_dict()
+        self.wodlst,count = select_data_to_dict()
         self.four_selectionlst = []
 
     def get_grlst_fromdb(self):

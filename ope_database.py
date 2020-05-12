@@ -198,6 +198,26 @@ def check_review():
                         """.format('"' + str(mt) + '"', '"' + str(today) + '"', '"' + str(kanji) + '"')
                     sql_exec(sql)
 
+def check_review_number():
+    """check number of words to review"""
+    sql = """
+    select kanji from my_vocabulary where memory_times < 3;
+    """
+    cursor = sql_exec(sql)
+    word_count = 0
+    grammar_count = 0
+    for row in cursor:
+        word_count += 1
+
+    sql = """
+       select kanji from grammar where memory_times < 3;
+       """
+    cursor = sql_exec(sql)
+    for row in cursor:
+        grammar_count += 1
+    return word_count,grammar_count
+
+
 if __name__ == '__main__':
     create_table()
     select_data_to_dict()

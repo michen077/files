@@ -102,11 +102,13 @@ def select_data_to_dict():
         wordlst = []
 
         SQL = """
-        select * from {}
+        select * from {} where memory_times<10 order by save_time
         """.format(Table_Name)
         cursor.execute(SQL)
 
+        count = 0
         for row in cursor.fetchall():
+            count += 1
             itemdict = {}
             rowlst = [item for item in row]
             for ind in range(len(rowlst)):
@@ -114,7 +116,7 @@ def select_data_to_dict():
             wordlst.append(itemdict)
 
         print("search successful")
-        return wordlst
+        return wordlst,count
     except Exception as e:
         print(e)
 

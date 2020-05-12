@@ -2,7 +2,7 @@ import saveToCsv
 import time
 import datetime
 from requeWeblio import WordMeaning
-from ope_database import sql_exec,create_table,insert_data,list_all_kanji,delete_from_db,check_review
+from ope_database import sql_exec,create_table,insert_data,list_all_kanji,delete_from_db,check_review,check_review_number
 from memorize import MemorizeVocabulary
 from gramma_memorize import GrammaMemorize
 
@@ -62,6 +62,9 @@ if __name__ == '__main__':
     db_check_review()
     while True:
         try:
+            # check Number of words to review
+            words_number,grammar_number = check_review_number()
+            print("------------ {} words need to review and {} grammars need to review------------".format(words_number,grammar_number))
             print("------------ search word or memory word ------------")
             print("------------ 1 search word from weblio ------------")
             print("------------ 2 only sentences from weblio ------------")

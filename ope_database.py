@@ -210,7 +210,7 @@ def check_review_number():
         word_count += 1
 
     sql = """
-       select kanji from grammar where memory_times < 3;
+       select kanji from grammar where memory_times < 5;
        """
     cursor = sql_exec(sql)
     for row in cursor:

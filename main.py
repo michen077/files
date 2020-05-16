@@ -5,6 +5,7 @@ from requeWeblio import WordMeaning
 from ope_database import sql_exec,create_table,insert_data,list_all_kanji,delete_from_db,check_review,check_review_number
 from memorize import MemorizeVocabulary
 from gramma_memorize import GrammaMemorize
+from ope_grammmar_db import check_review as grammar_review
 
 def db_check_review():
     check_review()
@@ -60,6 +61,7 @@ def delete_word():
 
 if __name__ == '__main__':
     db_check_review()
+    grammar_review()
     while True:
         try:
             # check Number of words to review

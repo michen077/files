@@ -123,8 +123,49 @@ def select_data_to_dict():
 def alter_db_item(word_dict,item):
     SQL = """
         update grammar set {} = {} where kanji = {}
-        """.format(item,word_dict["memory_times"], '"' + word_dict["kanji"] + '"')
+        """.format(item,word_dict[item], '"' + word_dict["kanji"] + '"')
     sql_exec(SQL)
+
+
+def check_review():
+    wordlst =[]
+    sql = """
+    select kanji,last_updated from grammar;
+    """
+    cursor = sql_exec(sql)
+    for row in cursor.fetchall():
+        wordlst.append(row)
+
+    today = datetime.datetime.today()
+    for wd in wordlst:
+        kanji = wd[0]
+        updated_time = wd[1]
+        if not updated_time:
+            sql = """
+                update grammar set last_updated={} where kanji={};
+                """.format('"' + str(today) + '"', '"' + str(kanji) + '"')
+            sql_exec(sql)
+        if updated_time:
+            ut = datetime.datetime.fromisoformat(updated_time)
+            td = (today - ut).days
+            sql = """
+                select memory_times from grammar where kanji={}
+                """.format('"' + kanji + '"')
+            cursor = sql_exec(sql)
+            mt = cursor.fetchone()[0]
+            if mt < 0:
+                sql = """
+                   update grammar set memory_times={},last_updated={} where kanji={};
+                   """.format('"' + str(0) + '"', '"' + str(today) + '"',
+                              '"' + str(kanji) + '"')
+                sql_exec(sql)
+            if td >= 1:
+                if mt > 0:
+                    mt = mt - td
+                    sql = """
+                        update grammar set memory_times={},last_updated={} where kanji={};
+                        """.format('"' + str(mt) + '"', '"' + str(today) + '"', '"' + str(kanji) + '"')
+                    sql_exec(sql)
 
 if __name__ == '__main__':
     create_table()

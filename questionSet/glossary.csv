@@ -1,0 +1,5 @@
+word,completion,explanation,cn_explanation
+MIPS,million instructions per second,100万命令毎秒
+MTBF,Mean Time Between Failure,平均故障間隔
+クロック周波数,clock frequency,単位はHzで、1秒間に1000クロックあれば1kHzとなり
+フールプルーフ,fool proof,機器の設計などについての考え方の一つで、利用者が操作や取り扱い方を誤っても危険が生じない、あるいは、そもそも誤った操作や危険な使い方ができないような構造や仕掛けを設計段階で組み込むこと。

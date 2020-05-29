@@ -100,7 +100,7 @@ class GrammaMemorize:
     def gra_memo_exec(self):
         # create_table()
         # GrammayTextToDb().grammar_text_to_db()
-        for count in range(5):
+        for count in range(10):
             self.get_grlst_fromdb()
             self.convert_phrase_toquestion()
             self.get_the_question_and_review()

@@ -126,7 +126,7 @@ def select_less_times_data_to_dict():
         wordlst = []
 
         SQL = """
-        select * from my_vocabulary where memory_times<3 order by save_time DESC
+        select * from my_vocabulary where memory_times<3 order by memory_times,save_time DESC
         """
         cursor.execute(SQL)
 

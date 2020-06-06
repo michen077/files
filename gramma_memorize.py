@@ -29,6 +29,7 @@ class GrammaMemorize:
             for key in item.keys():
                 if str(key).startswith("phrase"):
                     item[key] = item[key].replace(item["kanji"].replace("～",""),"_______")
+                    item[key] = item[key].replace(item["kanji"].replace("〜",""),"_______")
 
     def get_question_and_answer(self,selectionlst = None):
         if not selectionlst : selectionlst = self.four_selectionlst

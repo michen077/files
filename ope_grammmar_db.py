@@ -99,7 +99,7 @@ class GrammayTextToDb:
 def select_data_to_dict():
     try:
         cursor =conn.cursor()
-        wordlst = []
+        wordlst = []d
 
         SQL = """
         select * from {} where memory_times<2 order by memory_times,save_time

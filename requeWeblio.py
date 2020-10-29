@@ -45,22 +45,29 @@ class WordMeaning:
         return meaning_html,sentence_html,jp_meaning
 
     def get_jp_explain(self):
-        print("---------------start find in 実用日本語表現辞典-----------------")
-        soup = BeautifulSoup(self.jpmeaning_html, 'html.parser')
-        jp_exp = soup.find_all(class_="NetDicBody")
-        jp_exp2 = jp_exp[0].div.div
-        jp_exp = jp_exp2.find_all("div", style="text-indent:0;")
-        exp_text = ""
-        for exp in jp_exp:
-            exp_text += exp.get_text()+ "\n"
-        if not exp_text:
-            jp_exp = jp_exp2.find_all("div")
+        try:
+            print("---------------start find in 実用日本語表現辞典-----------------")
+            soup = BeautifulSoup(self.jpmeaning_html, 'html.parser')
+            # jp_exp = soup.find_all(class_="NetDicBody")
+            # jp_exp2 = jp_exp[0].div.div
+            # jp_exp = jp_exp2.find_all("div", style="text-indent:0;")
+            jp_exp = soup.find_all(class_="Sgkdj")
+            # jp_exp = jp_exp.p
+            # print(jp_exp)
             exp_text = ""
             for exp in jp_exp:
-                for string in exp.strings:
-                    exp_text += string
-        print(exp_text)
-        self.word.update({"jp_explanation" : exp_text})
+                # print(exp)
+                exp_text += exp.get_text()+ "\n"
+            if not exp_text:
+                jp_exp = jp_exp2.find_all("div")
+                exp_text = ""
+                for exp in jp_exp:
+                    for string in exp.strings:
+                        exp_text += string
+            print(exp_text)
+            self.word.update({"jp_explanation" : exp_text})
+        except Exception:
+            print("wrong")
 
 
     def get_kanji_kana_phrace(self):
@@ -68,6 +75,7 @@ class WordMeaning:
         try:
             soup = BeautifulSoup(self.meaning_html, 'html.parser')
             kanji = soup.find(id="h1Query").get_text()
+            print(kanji)
             kana = soup.find(class_="ruby").get_text()
             kenji = soup.find(class_="Kejje")
             explanation = soup.find(class_="content-explanation je").get_text()
@@ -160,4 +168,4 @@ class WordMeaning:
         return self.word
 
 if __name__ == '__main__':
-    WordMeaning("皮切り").exec()
+    WordMeaning("拗れる").exec()

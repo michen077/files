@@ -126,7 +126,7 @@ def select_less_times_data_to_dict():
         wordlst = []
 
         SQL = """
-        select * from my_vocabulary where memory_times<3 order by memory_times,save_time DESC
+        select * from my_vocabulary where memory_times<2 order by memory_times,save_time DESC
         """
         cursor.execute(SQL)
 
@@ -201,7 +201,7 @@ def check_review():
 def check_review_number():
     """check number of words to review"""
     sql = """
-    select kanji from my_vocabulary where memory_times < 3;
+    select kanji from my_vocabulary where memory_times < 2;
     """
     cursor = sql_exec(sql)
     word_count = 0

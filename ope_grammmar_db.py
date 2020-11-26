@@ -102,7 +102,7 @@ def select_data_to_dict():
         wordlst = []
 
         SQL = """
-        select * from {} where memory_times<1 order by memory_times,save_time asc
+        select * from {} order by memory_times
         """.format(Table_Name)
         cursor.execute(SQL)
 
